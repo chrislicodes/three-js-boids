@@ -42,28 +42,31 @@ const camera = new THREE.PerspectiveCamera(
   75,
   sizes.width / sizes.height,
   0.1,
-  100
+  1000
 );
 camera.position.x = 0;
 camera.position.y = 0;
-camera.position.z = 10;
+camera.position.z = 200;
 scene.add(camera);
 
 // Controls
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
+controls.autoRotate = true;
 
 //Cone Geometry
 
 //Adding the Boids
-const boids = Array.from({ length: 10 }).map(() => new Boid());
+const boids = Array.from({ length: 500 }).map(
+  () => new Boid({ wireframe: true })
+);
 
 for (const boid of boids) {
   scene.add(boid.model);
 }
 
 const axesHelper = new THREE.AxesHelper(5);
-scene.add(axesHelper);
+// scene.add(axesHelper);
 
 /**
  * Renderer
