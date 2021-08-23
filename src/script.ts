@@ -54,16 +54,9 @@ const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 
 //Cone Geometry
-const geometry = new THREE.ConeGeometry(1, 3, 16);
-const material = new THREE.MeshBasicMaterial({
-  color: 0xffff00,
-  wireframe: true,
-});
 
 //Adding the Boids
-const boids = Array.from({ length: 10 }).map(
-  () => new Boid(material, geometry)
-);
+const boids = Array.from({ length: 10 }).map(() => new Boid());
 
 for (const boid of boids) {
   scene.add(boid.model);
