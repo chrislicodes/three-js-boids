@@ -1,27 +1,40 @@
 import * as THREE from "three";
 
+//share Geometries and Materials between Boid Instances
+export class BoidFactory {
+  #geometry: THREE.ConeGeometry;
+  #material: THREE.MeshBasicMaterial;
+
+  constructor({ color = 0x0fd63d, wireframe = false } = {}) {
+    this.#geometry = new THREE.ConeGeometry(1, 3, 8);
+    this.#material = new THREE.MeshBasicMaterial({
+      color: color,
+      wireframe: wireframe,
+    });
+  }
+
+  createBoid({
+    position = new THREE.Vector3((Math.random() - 0.5) * 10, 0, 0),
+  } = {}) {
+    return new Boid(position, this.#geometry, this.#material);
+  }
+}
+
 export class Boid {
   #model: THREE.Mesh;
   #velocity = new THREE.Vector3();
-
   #acceleration = new THREE.Vector3(
     (Math.random() - 0.5) * 0.01,
     (Math.random() - 0.5) * 0.01,
     (Math.random() - 0.5) * 0.01
   );
 
-  constructor({
-    position = new THREE.Vector3((Math.random() - 0.5) * 10, 0, 0),
-    color = 0x0fd63d,
-    wireframe = false,
-  } = {}) {
-    this.#model = new THREE.Mesh(
-      new THREE.ConeGeometry(1, 3, 8),
-      new THREE.MeshBasicMaterial({
-        color: color,
-        wireframe: wireframe,
-      })
-    );
+  constructor(
+    position: THREE.Vector3,
+    geometry: THREE.ConeGeometry,
+    material: THREE.MeshBasicMaterial
+  ) {
+    this.#model = new THREE.Mesh(geometry, material);
 
     this.#model.position.copy(
       new THREE.Vector3(position.x - 0.5, position.y - 0.5, position.z - 0.5)

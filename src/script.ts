@@ -1,7 +1,9 @@
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { Boid } from "./entities/Boid";
+import { BoidFactory } from "./entities/Boid";
+import { Box } from "./entities/Box";
+import { Wall } from "./entities/Wall";
 
 /**
  * Base
@@ -52,18 +54,48 @@ scene.add(camera);
 // Controls
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
-controls.autoRotate = true;
+// controls.autoRotate = true;
 
-//Cone Geometry
+// Adding Box
+const box = new Box();
+scene.add(box.model);
+
+// Adding Wall
+// const wall = new Wall(5, 5, 5, 0, 0);
+// scene.add(wall.model);
+
+// Raycaster
+const raycaster = new THREE.Raycaster();
+const rayOrigin = new THREE.Vector3(0, 0, 0);
+const rayDirection = new THREE.Vector3(10, 0, 0);
+rayDirection.normalize();
+raycaster.far = 2;
+
+raycaster.set(rayOrigin, rayDirection);
+scene.add(
+  new THREE.ArrowHelper(
+    raycaster.ray.direction,
+    raycaster.ray.origin,
+    300,
+    0xff0000
+  )
+);
 
 //Adding the Boids
-const boids = Array.from({ length: 500 }).map(
-  () => new Boid({ wireframe: true })
-);
+
+const boidFactory = new BoidFactory({ wireframe: true });
+
+const boids = Array.from({ length: 1 }).map(() => boidFactory.createBoid());
 
 for (const boid of boids) {
   scene.add(boid.model);
 }
+
+const intersect = raycaster.intersectObjects([
+  box.model,
+  ...boids.map((boid) => boid.model),
+]);
+console.log(intersect);
 
 const axesHelper = new THREE.AxesHelper(5);
 // scene.add(axesHelper);
