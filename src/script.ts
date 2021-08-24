@@ -65,37 +65,23 @@ scene.add(box.model);
 // scene.add(wall.model);
 
 // Raycaster
-const raycaster = new THREE.Raycaster();
-const rayOrigin = new THREE.Vector3(0, 0, 0);
-const rayDirection = new THREE.Vector3(10, 0, 0);
-rayDirection.normalize();
-raycaster.far = 2;
+// const raycaster = new THREE.Raycaster();
+// const rayOrigin = new THREE.Vector3(0, 0, 0);
+// const rayDirection = new THREE.Vector3(10, 0, 0);
+// rayDirection.normalize();
+// raycaster.far = 2;
 
-raycaster.set(rayOrigin, rayDirection);
-scene.add(
-  new THREE.ArrowHelper(
-    raycaster.ray.direction,
-    raycaster.ray.origin,
-    300,
-    0xff0000
-  )
-);
+// raycaster.set(rayOrigin, rayDirection);
 
 //Adding the Boids
 
-const boidFactory = new BoidFactory({ wireframe: true });
+const boidFactory = new BoidFactory(box.model, { wireframe: true });
 
-const boids = Array.from({ length: 1 }).map(() => boidFactory.createBoid());
+const boids = Array.from({ length: 5 }).map(() => boidFactory.createBoid());
 
 for (const boid of boids) {
   scene.add(boid.model);
 }
-
-const intersect = raycaster.intersectObjects([
-  box.model,
-  ...boids.map((boid) => boid.model),
-]);
-console.log(intersect);
 
 const axesHelper = new THREE.AxesHelper(5);
 // scene.add(axesHelper);
@@ -109,6 +95,15 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+const boidArrow = new THREE.ArrowHelper(
+  boids[0].raycaster.ray.direction,
+  boids[0].raycaster.ray.origin,
+  10,
+  0xff0000
+);
+
+scene.add(boidArrow);
 
 /**
  * Animate
@@ -126,8 +121,8 @@ const tick = () => {
     boid.update();
   }
 
-  // Update controls
-  controls.update();
+  boidArrow.setDirection(boids[0].raycaster.ray.direction);
+  boidArrow.position.copy(boids[0].model.position);
 
   // Render
   renderer.render(scene, camera);
